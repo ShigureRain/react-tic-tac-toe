@@ -51,24 +51,40 @@ class Game extends React.Component {
         xIsNext: true
       }],
       stepNumber: 0,
-      xIsNext: true
+      xIsNext: true,
+      reverse: false
     }
   }
 
   handleClick(i) {
-    const history = this.state.history.slice(0, this.state.stepNumber + 1)  //删除点击的那一项以外多余的记录
-    const current = history[history.length - 1]
+    const history = this.state.reverse ? this.state.history.slice(this.state.stepNumber) :
+      this.state.history.slice(0, this.state.stepNumber + 1)  //删除点击的那一项以外多余的记录
+    const current = this.state.reverse ? history[0] : history[history.length - 1]
     const squares = current.squares.slice()
 
     if (calculateWinner(squares) || squares[i]) {return}
     squares[i] = this.state.xIsNext ? 'X' : 'O'
+
+    if (this.state.reverse) {  //如果是反转模式，需要从头部插入数据
+      this.setState({
+        history: ([{
+          squares: squares,
+          coordinates: coordinate(i),
+          xIsNext: this.state.xIsNext,
+        }]).concat(history),
+      })
+    } else {
+      this.setState({
+        history: history.concat([{
+          squares: squares,
+          coordinates: coordinate(i),
+          xIsNext: this.state.xIsNext,
+        }]),
+      })
+    }
+
     this.setState({
-      history: history.concat([{
-        squares: squares,
-        coordinates: coordinate(i),
-        xIsNext: this.state.xIsNext,
-      }]),
-      stepNumber: history.length,
+      stepNumber: this.state.reverse ? 0 : history.length,
       xIsNext: !this.state.xIsNext
     })
   }
@@ -80,14 +96,26 @@ class Game extends React.Component {
     })
   }
 
+  sort() {
+    this.setState({
+      history: this.state.history.slice().reverse(),
+      reverse: !this.state.reverse,
+      stepNumber: this.state.history.length - this.state.stepNumber - 1
+    })
+  }
+
   render() {
     const history = this.state.history
     const current = history[this.state.stepNumber]
     const winner = calculateWinner(current.squares)
 
     const moves = history.map((step, move) => {
-      const desc = move ?
-        '#' + move + '\n' + (step.xIsNext ? 'X' : 'O') + '\n' + step.coordinates :
+
+      const nowMove = this.state.reverse
+        ? history.length - move - 1 : move
+
+      const desc = nowMove ?
+        '#' + nowMove + '\n' + (step.xIsNext ? 'X' : 'O') + '\n' + step.coordinates :
         'Go to game start'
 
       return (
@@ -112,6 +140,7 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          <button onClick={() => {this.sort()}}>Reverse</button>
           <ol>{moves}</ol>
         </div>
       </div>
@@ -158,4 +187,5 @@ const coordinate = (i) => {
   ]
   return findCoordinate[i]
 }
+
 
