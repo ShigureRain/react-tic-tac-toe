@@ -52,3 +52,6 @@ ol, ul {
 .current-step {
   font-weight: bold;
 }
+.highlight-winner {
+  color: red;
+}
