@@ -1,3 +1,3 @@
 # React tic-tac-toe
 Subsequent features of the React official tutorial
-See the document for details: https://www.yuque.com/shigurerain/js/xg7fgr8cxggutyl0
+See the document for details: https://juejin.cn/post/7202127250643435576
