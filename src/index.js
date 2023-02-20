@@ -135,10 +135,16 @@ class Game extends React.Component {
     })
 
     let status
+    let classDraw
     if (winner) {
       status = 'winner: ' + winner
     } else {
-      status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
+      if (this.state.history.length === 10 && this.state.reverse ? this.state.stepNumber === 0 : this.state.stepNumber === 9) {
+        status = 'Game draw!'
+        classDraw = 'font-bold'
+      } else {
+        status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O')
+      }
     }
 
     return (
@@ -147,7 +153,7 @@ class Game extends React.Component {
           <Board winner={winnerCoordinate} squares={current.squares} onClick={(i) => {this.handleClick(i)}}/>
         </div>
         <div className="game-info">
-          <div>{status}</div>
+          <div className={classDraw}>{status}</div>
           <button onClick={() => {this.sort()}}>Reverse</button>
           <ol>{moves}</ol>
         </div>
